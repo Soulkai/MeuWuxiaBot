@@ -7,7 +7,7 @@ const handleInventario = require('../handlers/inventarioHandler'); // <-- NOVO
 const techHandlers = require('../handlers/techniqueHandlers');
 const handleRomper = require('../handlers/breakthroughHandler');
 const expHandlers = require('../handlers/explorationHandler');
-
+const profHandlers = require('../handlers/professionHandler');
 
 
 
@@ -62,7 +62,12 @@ else if (commandName === 'inventario') { // <-- NOVO BLOCO
     else if (commandName === 'lista' && args[0] === 'area') { await expHandlers.handleListaArea(message, sender); }
     else if (commandName === 'viajar') { await expHandlers.handleViajar(message, args, sender); }
     else if (commandName === 'explorar') { await expHandlers.handleExplorar(message, sender); }
-
+else if (commandName === 'profissao' && args[0] === 'escolher') { 
+    await profHandlers.handleEscolherProfissao(message, args.slice(1), sender); 
+}
+else if (commandName === 'refinar' || commandName === 'forjar') { 
+    await profHandlers.handleRefinar(message, args, sender); 
+}
 
     else {
         await message.reply('Mestre, esta técnica secreta ainda não foi compreendida pelo Sistema Celestial.');
