@@ -8,7 +8,7 @@ const techHandlers = require('../handlers/techniqueHandlers');
 const handleRomper = require('../handlers/breakthroughHandler');
 const expHandlers = require('../handlers/explorationHandler');
 const profHandlers = require('../handlers/professionHandler');
-
+const econHandlers = require('../handlers/economyHandler');
 
 
 const PREFIX = process.env.BOT_PREFIX || '/';
@@ -68,7 +68,9 @@ else if (commandName === 'profissao' && args[0] === 'escolher') {
 else if (commandName === 'refinar' || commandName === 'forjar') { 
     await profHandlers.handleRefinar(message, args, sender); 
 }
-
+else if (commandName === 'loja') { await econHandlers.handleLoja(message); }
+else if (commandName === 'comprar') { await econHandlers.handleComprar(message, args, sender); }
+    
     else {
         await message.reply('Mestre, esta técnica secreta ainda não foi compreendida pelo Sistema Celestial.');
         console.log(`⚠️ [LOG] Comando desconhecido invocado.`);
