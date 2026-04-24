@@ -70,7 +70,9 @@ else if (commandName === 'refinar' || commandName === 'forjar') {
 }
 else if (commandName === 'loja') { await econHandlers.handleLoja(message); }
 else if (commandName === 'comprar') { await econHandlers.handleComprar(message, args, sender); }
-    
+    else if (commandName === 'vender') { await econHandlers.handleVender(message, args, sender); }
+    else if (commandName === 'mercado') { await econHandlers.handleMercado(message, args, sender); }
+        
     else {
         await message.reply('Mestre, esta técnica secreta ainda não foi compreendida pelo Sistema Celestial.');
         console.log(`⚠️ [LOG] Comando desconhecido invocado.`);
