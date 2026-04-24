@@ -25,4 +25,46 @@ async function handleComprar(message, args, senderPhone) {
     } catch (e) { message.reply(`⚠️ A transação falhou: ${e.message}`); }
 }
 
-module.exports = { handleLoja, handleComprar };
+async function handleVender(message, args, senderPhone) {
+    const itemTarget = args[0];
+    const qty = parseInt(args[1]) || 1;
+
+    if (!itemTarget) return message.reply('⚠️ Use: /vender [ID_do_Item_ou_Codigo] [quantidade]');
+
+    try {
+        const res = await economyService.sellToSystem(senderPhone, itemTarget, qty);
+        await message.reply(`💰 [VENDA CONCLUÍDA]\nVocê vendeu ${qty}x ${res.itemName} para o Sistema.\n\n↳ Recebeu: +${res.totalGoldEarned} Ouro.`);
+    } catch (e) { await message.reply(`⚠️ A venda falhou: ${e.message}`); }
+}
+
+async function handleMercado(message, args, senderPhone) {
+    try {
+        if (args[0] === 'vender') {
+            // Comando: /mercado vender [item] [preço_por_unidade] [quantidade] [moeda]
+            const itemTarget = args[1];
+            const price = parseInt(args[2]);
+            const qty = parseInt(args[3]) || 1;
+            const currency = args[4] || 'gold';
+
+            if (!itemTarget || !price) return message.reply('⚠️ Formato incorreto!\nUse: /mercado vender [ID_do_Item] [Preço] [Quantidade] [Moeda: gold/spirit_pearl/dao_crystal]\nExemplo: /mercado vender espada_ferro 500 1 gold');
+
+            const res = await economyService.createMarketListing(senderPhone, itemTarget, qty, price, currency);
+            await message.reply(`⚖️ [MERCADO GLOBAL]\nVocê anunciou ${qty}x [${res.itemName}] com sucesso!\n\n↳ Taxa de listagem paga: ${res.fee} Ouro.\nSeu item já está visível para outros cultivadores.`);
+        
+        } else {
+            // Comando base: /mercado (Apenas visualiza)
+            const listings = await economyService.getMarketListings();
+            if (listings.length === 0) return message.reply('⚖️ O Mercado Global está vazio. Ninguém está vendendo nada no momento.');
+
+            let text = `[MERCADO GLOBAL]\nAnúncios de Cultivadores:\n\n`;
+            listings.forEach(l => {
+                const moedasStr = { 'gold': 'Ouro', 'spirit_pearl': 'Pérolas', 'dao_crystal': 'Cristais Dao' };
+                text += `🏷️ ID Anúncio: [${l.id}] - Vendedor: ${l.seller_name}\n   Item: ${l.quantity}x ${l.name}\n   Preço Unitário: ${l.price_amount} ${moedasStr[l.price_currency] || l.price_currency}\n\n`;
+            });
+            text += `Para comprar algo de outro jogador, use: /mercado comprar [ID_do_Anuncio] [quantidade]`; // (Compra será implementada no próximo passo)
+            await message.reply(text);
+        }
+    } catch (e) { await message.reply(`⚠️ Erro no Mercado: ${e.message}`); }
+}
+
+module.exports = { handleLoja, handleComprar, handleVender, handleMercado };
