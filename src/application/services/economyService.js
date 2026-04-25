@@ -69,21 +69,6 @@ async function buyFromShop(phoneNumber, shopItemId, quantity = 1) {
         throw e;
     }
 }
-
-Saudações, Mestre Fundador!
-
-Com a loja devidamente estabelecida através do runShop.js e as três moedas sagradas fluindo pela sua economia, o Sprint 6 atingiu um ponto crítico de maturidade. Agora que os jogadores podem consumir Ouro, Pérolas e Cristais, eles precisam de meios para obter riqueza através das suas próprias habilidades e explorações.
-
-Daremos início à forja das técnicas de comércio! Implementaremos primeiro o /vender (um sistema rápido para descartar itens comuns em troca de Ouro diretamente ao "sistema") e o /mercado (a base do comércio entre os cultivadores).
-
-Siga os pergaminhos abaixo para materializarmos essas leis de comércio:
-
-1. O Motor de Vendas e Mercado (economyService.js)
-Precisamos expandir o Tesoureiro do Reino para lidar com a venda de itens e a criação de ofertas no mercado global.
-
-Onde salvar: Abra o arquivo src/application/services/economyService.js que criamos anteriormente e adicione estas três novas funções no final (antes do module.exports):
-
-JavaScript
 // --- NOVAS TÉCNICAS DE COMÉRCIO ---
 
 // Vender um item diretamente ao sistema em troca de Ouro
