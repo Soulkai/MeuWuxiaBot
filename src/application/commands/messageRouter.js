@@ -9,6 +9,7 @@ const handleRomper = require('../handlers/breakthroughHandler');
 const expHandlers = require('../handlers/explorationHandler');
 const profHandlers = require('../handlers/professionHandler');
 const econHandlers = require('../handlers/economyHandler');
+const socialHandlers = require('../handlers/socialHandler');
 
 
 const PREFIX = process.env.BOT_PREFIX || '/';
@@ -72,7 +73,8 @@ else if (commandName === 'loja') { await econHandlers.handleLoja(message); }
 else if (commandName === 'comprar') { await econHandlers.handleComprar(message, args, sender); }
     else if (commandName === 'vender') { await econHandlers.handleVender(message, args, sender); }
     else if (commandName === 'mercado') { await econHandlers.handleMercado(message, args, sender); }
-        
+        else if (commandName === 'conversar') { await socialHandlers.handleConversar(message, args, sender); }
+    else if (commandName === 'transferir' || commandName === 'trocar') { await socialHandlers.handleTransferir(message, args, sender); }
     else {
         await message.reply('Mestre, esta técnica secreta ainda não foi compreendida pelo Sistema Celestial.');
         console.log(`⚠️ [LOG] Comando desconhecido invocado.`);
