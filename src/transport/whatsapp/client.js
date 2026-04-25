@@ -3,21 +3,15 @@ const qrcode = require('qrcode-terminal');
 
 // Cria o cliente do bot e guarda a sessão localmente
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth({ dataPath: process.env.SESSION_DIR || './.wwebjs_auth' }),
     puppeteer: {
-        executablePath: '/data/data/com.termux/files/usr/bin/chromium-browser',
+        // executablePath: '/data/data/com.termux/files/usr/bin/chromium-browser', <-- APAGUE ESTA LINHA
+        headless: true,
         args: [
             '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process', // O selo de proteção vital contra o bloqueio do Android
-            '--disable-gpu'
+            '--disable-setuid-sandbox'
         ]
     }
-    // Removemos a Máscara de Ilusão (User-Agent) para não interferir na geração limpa do QR Code
 });
 
 // Evento: Geração do QR Code seguro no terminal
