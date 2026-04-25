@@ -1,4 +1,4 @@
-```markdown
+markdown
 # 🐉 Chasing Immortality - WhatsApp Wuxia RPG Bot
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
@@ -161,6 +161,4 @@ Se você deseja adicionar novas técnicas, itens, profissões ou refinar fórmul
 ## ⚖️ Licença
 Desenvolvido com o *Dao* no coração.
 Este projeto é de código aberto sob a licença **MIT**. Sinta-se livre para ramificar, forjar novas técnicas e contribuir para o crescimento contínuo desta Seita.
-```
 
-```
