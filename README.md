@@ -48,7 +48,7 @@ O universo de *Chasing Immortality* foi projetado com sistemas profundos de prog
 ### 1. Clonando e Instalando Dependências
 Clone este repositório e instale as bibliotecas necessárias:
 ```bash
-git clone [https://github.com/SeuUsuario/MeuWuxiaBot.git](https://github.com/SeuUsuario/MeuWuxiaBot.git)
+git clone https://github.com/Soulkai/MeuWuxiaBot.git
 cd MeuWuxiaBot
 npm install
 ```
