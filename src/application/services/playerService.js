@@ -25,6 +25,7 @@ async function registerPlayer(phoneNumber, pushName, characterName, sex) {
 
         // 3. Buscando os IDs no Banco de Dados
         const raceDB = await query(`SELECT id, name FROM races WHERE code = ?`, [raceCode]);
+        if (raceDB.length === 0) throw new Error(`Raça ${raceCode} não encontrada nas sementes do mundo.`);
         
         // Pega todos os clãs do Tier sorteado e escolhe um aleatório
         const clansDB = await query(`SELECT id, name FROM clans WHERE tier = ?`, [clanTier]);
@@ -89,7 +90,14 @@ async function registerPlayer(phoneNumber, pushName, characterName, sex) {
         };
 
     } catch (error) {
-        await run(`ROLLBACK`);
+        // Tenta cancelar a transação, engolindo o erro caso a transação nunca tenha sido iniciada
+        try {
+            await run(`ROLLBACK`);
+        } catch (rollbackError) {
+            // Transação não iniciada, a ilusão é ignorada silenciosamente
+        }
+        
+        // Dispara o ERRO VERDADEIRO para ser capturado e enviado ao WhatsApp
         throw error;
     }
 }
@@ -152,6 +160,7 @@ async function getPlayerStats(phoneNumber) {
 
     return result[0];
 }
+
 // Busca os itens guardados no anel espacial do cultivador
 async function getPlayerInventory(phoneNumber) {
     // Busca os dados base do jogador
