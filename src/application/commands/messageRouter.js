@@ -35,7 +35,13 @@ const messageRouter = async (message) => {
     const args = message.body.slice(PREFIX.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    const sender = message.from;
+    // 🛠️ O SELO DE SEPARAÇÃO DE ALMAS (CORREÇÃO PARA GRUPOS) 🛠️
+    // Tenta pegar o autor (se for grupo), ou o from (se for privado)
+    let sender = message.author || message.from;
+    
+    // Purifica o ID removendo os sufixos do WhatsApp para guardar apenas os números
+    sender = sender.replace('@c.us', '').replace('@s.whatsapp.net', '');
+
     const pushname = message._data?.notifyName || 'Cultivador Anônimo';
 
     console.log(`\n📜 [LOG DE COMANDO]`);
