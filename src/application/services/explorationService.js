@@ -29,7 +29,11 @@ async function exploreArea(phoneNumber) {
     if (playerResult.length === 0) throw new Error('Personagem não encontrado.');
     const player = playerResult[0];
 
-    await run(`UPDATE player_attributes SET fatigue = fatigue + 5 WHERE player_id = ?`, [player.id]);
+    await run(
+    `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, status) 
+     VALUES ('explorationService', 'explore', ?, ?, 'whatsapp', 'success')`, 
+    [selectedEvent, player.id]
+);
 
     const events = JSON.parse(player.event_table_json);
     let totalWeight = 0;
