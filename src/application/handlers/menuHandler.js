@@ -15,7 +15,7 @@ async function handleMenu(message, args, senderPhone) {
             payload = '📜 Menu de comandos não encontrado no README. Use /changelog para ver alterações recentes.';
         }
 
-        const chunkSize = 1500;
+        const chunkSize = 15000;
         for (let i = 0; i < payload.length; i += chunkSize) {
             const chunk = payload.slice(i, i + chunkSize);
             await message.reply(chunk);
