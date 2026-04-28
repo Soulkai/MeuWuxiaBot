@@ -13,7 +13,6 @@ async function getPlayersInLocalArea(phoneNumber) {
     if (playerResult.length === 0) throw new Error('Personagem não encontrado.');
     const player = playerResult[0];
 
-    // Busca até 10 outros jogadores que estão fisicamente na mesma região
     const others = await query(`
         SELECT character_name FROM players 
         WHERE region_id = ? AND id != ? LIMIT 10
@@ -47,12 +46,30 @@ async function exploreArea(phoneNumber) {
     let encounterText = '';
     let dropText = '';
 
+    // --- FUNÇÃO AUXILIAR PARA ENTREGAR O ITEM COM SEGURANÇA ---
+    async function giveItemToPlayer(playerId, itemId) {
+        // Verifica se o jogador já tem uma instância deste item
+        const existingInv = await query(`
+            SELECT pi.id FROM player_inventory pi
+            JOIN item_instances ii ON pi.item_instance_id = ii.id
+            WHERE pi.player_id = ? AND ii.item_id = ?
+        `, [playerId, itemId]);
+
+        if (existingInv.length > 0) {
+            // Apenas adiciona +1 na quantidade
+            await run(`UPDATE player_inventory SET quantity = quantity + 1 WHERE id = ?`, [existingInv[0].id]);
+        } else {
+            // Forja uma nova instância do material no mundo e guarda no inventário
+            const newInstance = await run(`INSERT INTO item_instances (item_id, quality_tier, origin_type) VALUES (?, 'Comum', 'drop')`, [itemId]);
+            await run(`INSERT INTO player_inventory (player_id, item_instance_id, quantity) VALUES (?, ?, 1)`, [playerId, newInstance.lastID]);
+        }
+    }
+
     if (selectedEvent.includes('monster')) {
         encounterText = '🐺 Você encontrou uma Fera Selvagem!';
         const drop = await query(`SELECT id, name FROM items WHERE item_type = 'material' ORDER BY RANDOM() LIMIT 1`);
         if (drop.length > 0) {
-            // CORREÇÃO: Usando item_instance_id exigido pelo Banco de Dados
-            await run(`INSERT INTO player_inventory (player_id, item_instance_id, quantity) VALUES (?, ?, 1) ON CONFLICT(player_id, item_instance_id) DO UPDATE SET quantity = quantity + 1`, [player.id, drop[0].id]);
+            await giveItemToPlayer(player.id, drop[0].id);
             dropText = `Após uma batalha feroz, você recolheu: 1x ${drop[0].name}.`;
         }
     } 
@@ -60,8 +77,7 @@ async function exploreArea(phoneNumber) {
         encounterText = '🌿 Você encontrou um recurso natural cintilante.';
         const drop = await query(`SELECT id, name FROM items WHERE item_type = 'material' ORDER BY RANDOM() LIMIT 1`);
         if (drop.length > 0) {
-            // CORREÇÃO: Entregando a erva no inventário com item_instance_id
-            await run(`INSERT INTO player_inventory (player_id, item_instance_id, quantity) VALUES (?, ?, 1) ON CONFLICT(player_id, item_instance_id) DO UPDATE SET quantity = quantity + 1`, [player.id, drop[0].id]);
+            await giveItemToPlayer(player.id, drop[0].id);
             dropText = `Você coletou com cuidado: 1x ${drop[0].name}.`;
         }
     }
