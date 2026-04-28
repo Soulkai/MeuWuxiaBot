@@ -29,11 +29,8 @@ async function exploreArea(phoneNumber) {
     if (playerResult.length === 0) throw new Error('Personagem não encontrado.');
     const player = playerResult[0];
 
-    await run(
-    `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, status) 
-     VALUES ('explorationService', 'explore', ?, ?, 'whatsapp', 'success')`, 
-    [selectedEvent, player.id]
-);
+    // Gasto de Fadiga
+    await run(`UPDATE player_attributes SET fatigue = fatigue + 5 WHERE player_id = ?`, [player.id]);
 
     const events = JSON.parse(player.event_table_json);
     let totalWeight = 0;
@@ -80,7 +77,12 @@ async function exploreArea(phoneNumber) {
         socialEncounter = `\n\n👥 **Presença Detectada:** Ao vasculhar a região, você cruzou o caminho com o cultivador **${otherPlayer[0].character_name}**.\n*(Use /conversar ${otherPlayer[0].character_name} ou /trocar para interagir)*`;
     }
 
-    await run(`INSERT INTO game_logs (service_name, event_type, action, player_id) VALUES ('explorationService', 'explore', ?, ?)`, [selectedEvent, player.id]);
+    // --- O SELO DE LOG CORRIGIDO VEM EXATAMENTE AQUI NO FINAL ---
+    await run(
+        `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, status) 
+         VALUES ('explorationService', 'explore', ?, ?, 'whatsapp', 'success')`, 
+        [selectedEvent, player.id]
+    );
 
     return { regionName: player.region_name, encounterText, dropText, socialEncounter };
 }
