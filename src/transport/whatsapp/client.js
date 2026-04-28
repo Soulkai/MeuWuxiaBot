@@ -5,7 +5,6 @@ const qrcode = require('qrcode-terminal');
 const client = new Client({
     authStrategy: new LocalAuth({ dataPath: process.env.SESSION_DIR || './.wwebjs_auth' }),
     puppeteer: {
-        // executablePath: '/data/data/com.termux/files/usr/bin/chromium-browser', <-- APAGUE ESTA LINHA
         headless: true,
         args: [
             '--no-sandbox',

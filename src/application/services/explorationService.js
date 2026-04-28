@@ -49,7 +49,7 @@ async function exploreArea(phoneNumber) {
     if (selectedEvent.includes('monster')) {
         encounterText = '🐺 Você encontrou uma Fera Selvagem!';
         const drop = await query(`SELECT id, name FROM items WHERE item_type = 'material' ORDER BY RANDOM() LIMIT 1`);
-        await run(`INSERT INTO player_inventory (player_id, item_instance_id, quantity) VALUES (?, ?, 1) ON CONFLICT DO UPDATE SET quantity = quantity + 1`, [player.id, drop[0].id]);
+        await run(`INSERT INTO player_inventory (player_id, item_id, quantity) VALUES (?, ?, 1) ON CONFLICT(player_id, item_id) DO UPDATE SET quantity = quantity + 1`, [player.id, drop[0].id]);
         dropText = `Após uma batalha feroz, você recolheu: 1x ${drop[0].name}.`;
     } 
     else if (selectedEvent === 'herb' || selectedEvent === 'mineral') {

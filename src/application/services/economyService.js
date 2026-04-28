@@ -191,4 +191,84 @@ async function createMarketListing(phoneNumber, itemCodeOrId, quantity, price, c
     }
 }
 
-module.exports = { getShopItems, buyFromShop, sellToSystem, getMarketListings, createMarketListing };
+// Comprar de outro jogador no Mercado
+async function buyFromMarket(phoneNumber, marketListingId, quantity = 1) {
+    const player = (await query(`SELECT id FROM players WHERE phone_number = ?`, [phoneNumber]))[0];
+    if (!player) throw new Error('Cultivador não encontrado.');
+
+    // Busca o anúncio
+    const listing = (await query(`
+        SELECT ml.*, i.name, i.id as item_id 
+        FROM market_listings ml
+        JOIN items i ON ml.item_id = i.id
+        WHERE ml.id = ? AND ml.status = 'active' AND ml.expires_at > CURRENT_TIMESTAMP
+    `, [marketListingId]))[0];
+
+    if (!listing) throw new Error('Anúncio não encontrado ou expirado.');
+    if (listing.quantity < quantity) throw new Error(`Quantidade insuficiente. O anúncio oferece apenas ${listing.quantity} unidades.`);
+
+    // Mapear a moeda
+    const currencyMap = {
+        'gold': { field: 'gold', label: 'Ouro' },
+        'spirit_pearl': { field: 'spirit_stones', label: 'Pérolas Espirituais' },
+        'dao_crystal': { field: 'celestial_crystals', label: 'Cristais Dao' }
+    };
+    const currencyInfo = currencyMap[listing.price_currency];
+    if (!currencyInfo) throw new Error('Moeda desconhecida.');
+
+    const totalPrice = listing.price_amount * quantity;
+    const buyerWallet = (await query(`SELECT * FROM wallet_balances WHERE player_id = ?`, [player.id]))[0];
+
+    if (buyerWallet[currencyInfo.field] < totalPrice) {
+        throw new Error(`Saldo insuficiente! Você precisa de ${totalPrice} ${currencyInfo.label} (Possui: ${buyerWallet[currencyInfo.field]}).`);
+    }
+
+    const sellerQuery = `SELECT id FROM players WHERE id = (SELECT seller_player_id FROM market_listings WHERE id = ?)`;
+    const seller = (await query(sellerQuery, [marketListingId]))[0];
+
+    await run('BEGIN TRANSACTION');
+    try {
+        // Debita do comprador
+        await run(
+            `UPDATE wallet_balances SET ${currencyInfo.field} = ${currencyInfo.field} - ? WHERE player_id = ?`,
+            [totalPrice, player.id]
+        );
+
+        // Entrega o item ao comprador
+        await run(`
+            INSERT INTO player_inventory (player_id, item_id, quantity) 
+            VALUES (?, ?, ?)
+            ON CONFLICT(player_id, item_id) DO UPDATE SET quantity = quantity + ?
+        `, [player.id, listing.item_id, quantity, quantity]);
+
+        // Credita o vendedor
+        await run(
+            `UPDATE wallet_balances SET ${currencyInfo.field} = ${currencyInfo.field} + ? WHERE player_id = ?`,
+            [totalPrice, listing.seller_player_id]
+        );
+
+        // Atualiza a listagem
+        if (listing.quantity === quantity) {
+            await run(`UPDATE market_listings SET status = 'sold' WHERE id = ?`, [marketListingId]);
+        } else {
+            await run(`UPDATE market_listings SET quantity = quantity - ? WHERE id = ?`, [quantity, marketListingId]);
+        }
+
+        // Log de transação
+        await run(`INSERT INTO transactions (player_id, transaction_type, currency, amount) VALUES (?, 'market_buy', ?, ?)`, 
+            [player.id, listing.price_currency, totalPrice]);
+
+        await run('COMMIT');
+        return { 
+            success: true, 
+            itemName: listing.name, 
+            totalPrice, 
+            currencyLabel: currencyInfo.label 
+        };
+    } catch (e) {
+        await run('ROLLBACK');
+        throw e;
+    }
+}
+
+module.exports = { getShopItems, buyFromShop, sellToSystem, getMarketListings, createMarketListing, buyFromMarket };

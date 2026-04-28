@@ -1,17 +1,20 @@
 {
   "name": "bot-wuxia-rpg",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Bot Game Wuxia/Xianxia para WhatsApp",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "migrate": "node src/infra/db/runMigrations.js && node src/infra/db/runSeeds.js && node src/infra/db/runTechniques.js && node src/infra/db/runItems.js && node src/infra/db/runRecipes.js && node src/infra/db/runShop.js && node src/infra/db/runWorldExpansion.js && node src/infra/db/runBeasts.js && node src/infra/db/runTerritories.js && node src/infra/db/runCombats.js && node src/infra/db/runPhase2Migrations.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "qrcode-terminal": "^0.12.0",
     "sqlite3": "^5.1.7",
-    "whatsapp-web.js": "^1.23.0"
+    "whatsapp-web.js": "^1.23.0",
+    "puppeteer": "^20.0.0",
+    "node-cron": "^3.0.2"
   },
   "author": "Mestre Fundador",
-  "license": "ISC"
+  "license": "MIT"
 }

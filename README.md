@@ -1,7 +1,7 @@
 markdown
 # 🐉 Chasing Immortality - WhatsApp Wuxia RPG Bot
 
-![Version](https://img.shields.io/badge/Version-1.0.0_MVP-gold)
+![Version](https://img.shields.io/badge/Version-1.1.0_MVP-gold)
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
 ![SQLite](https://img.shields.io/badge/SQLite-Database-blue)
 ![whatsapp-web.js](https://img.shields.io/badge/whatsapp--web.js-Integration-25D366)
@@ -56,10 +56,20 @@ npm install
 ### 2. Variáveis de Ambiente
 Crie um arquivo `.env` na raiz do projeto e configure as premissas do sistema:
 ```env
-PREFIX=/
+BOT_PREFIX=/
 DB_PATH=./data/game.sqlite
 SESSION_DIR=./.wwebjs_auth
 ```
+
+### 🔌 Integrações & MVP 1.1.0
+Esta versão `MVP 1.1.0` traz novas integrações e funcionalidades do Phase 2:
+- Formações, Técnicas Próprias, Casamentos/Companheiros Dao
+- Eventos Globais e NPCs
+- Migrações adicionais (`runBeasts.js`, `runTerritories.js`, `runCombats.js`, `runPhase2Migrations.js`)
+- Novos comandos utilitários: `/menu`, `/changelog`
+- Use `/menu` para exibir o menu completo de comandos diretamente no WhatsApp
+- Use `/changelog` para revisar mudanças e versões recentes
+
 
 ### 3. Materialização do Banco de Dados (Migrations e Seeds)
 Antes de ligar o bot pela primeira vez, execute os rituais de injeção de dados no banco:
@@ -72,6 +82,10 @@ node src/infra/db/runItems.js          # 4. Catálogo de Itens do Mundo
 node src/infra/db/runRecipes.js        # 5. Compêndio de 150 Receitas
 node src/infra/db/runShop.js           # 6. Loja Oficial e Moedas
 node src/infra/db/runWorldExpansion.js # 7. Matriz de 155 Áreas de Exploração
+node src/infra/db/runBeasts.js          # 8. Bestas Místicas e Ovos
+node src/infra/db/runTerritories.js     # 9. Territórios e Domínios
+node src/infra/db/runCombats.js         # 10. Sistema de Combate
+node src/infra/db/runPhase2Migrations.js # 11. Tabelas Phase 2 (Formações, Técnicas Próprias, Casamentos)
 ```
 
 ### 4. Despertando o Sistema
@@ -112,8 +126,52 @@ Escaneie o QR Code no terminal com o seu WhatsApp (Aparelhos Conectados) e o bot
 ### 👥 Social e Seitas (Guildas)
 * `/conversar [Nome] [Mensagem]` - Envia uma mensagem telepática via DM do bot.
 * `/transferir [Nome] [ID] [Qtd]` - Entrega itens do seu inventário a outro jogador.
+* `/getid` - Usado em privado para gerar um código de vínculo secreto.
+* `/linkar [código]` - Usado apenas em grupo para conectar seu personagem de grupo ao seu perfil privado.
 * `/seita criar [Nome]` - Paga 1000 de Ouro para fundar uma potência marcial.
 * `/seita info` | `/seita membros` | `/seita lista` | `/seita entrar [ID]` - Gestão de guildas.
+
+### ⚔️ Combate e Bestas (Phase 2 - Implementado)
+* `/atacar [Nome]` - Inicia combate PvP contra outro jogador.
+* `/defender` | `/esquivar` | `/fugir` - Ações defensivas em combate.
+* `/chefe [Nome]` - Inicia combate PvE contra um chefe.
+* `/raid [ID]` - Entra em um raid ativo.
+* `/besta chocar [ID_Ovo]` - Choca um ovo para obter uma besta.
+* `/besta treinar` - Treina a besta ativa para ganhar XP.
+* `/besta status` - Consulta status das suas bestas.
+
+### 🏛️ Leilões e Territórios (Phase 2 - Implementado)
+* `/leilao criar [Item] [Preço] [Duração]` - Cria um leilão com anti-snipe.
+* `/leilao lance [ID] [Valor]` - Faz um lance em leilão ativo.
+* `/leilao listar` - Lista leilões ativos.
+* `/territorio investir [ID] [Valor]` - Investe em território da seita.
+* `/territorio coletar [ID]` - Coleta riquezas geradas pelo território.
+* `/territorio listar` - Lista territórios da seita.
+
+### ⚔️ Guerra de Seitas e Marionetes (Phase 2 - Implementado)
+* `/seita guerra [ID]` - Declarar guerra contra outra seita (líder apenas).
+* `/seita dominar [ID]` - Tentar dominar território de seita inimiga.
+* `/marionete criar [Nome]` - Criar marionete de combate.
+* `/marionete ativar [ID]` - Ativar marionete para buffs.
+* `/marionete listar` - Listar marionetes criadas.
+
+### ⚔️ Formações e Técnicas Próprias (Phase 2 - Implementado)
+* `/formacao criar [Nome] [IDs Membros]` - Criar formação com membros.
+* `/formacao ativar [ID]` - Ativar formação para buffs.
+* `/formacao listar` - Listar formações criadas.
+* `/tecnica_propria criar [Nome] [ID Base]` - Criar técnica própria baseada em outra.
+* `/tecnica_propria adicionar_efeito [ID] [Tipo] [Valor]` - Adicionar efeito à técnica.
+* `/tecnica_propria listar` - Listar técnicas próprias.
+
+### 💍 Casamentos e Companheiros (Phase 2 - Implementado)
+* `/casamento propor [Nome]` - Propor casamento a outro jogador.
+* `/casamento aceitar [ID]` - Aceitar proposta de casamento.
+* `/dao_companion ativar [ID]` - Ativar companheiro do Dao (requer casamento).
+
+### 🌍 Eventos Globais e NPCs (Phase 2 - Implementado)
+* `/evento listar` - Listar eventos globais ativos.
+* `/evento participar [ID]` - Participar de um evento global.
+* `/npc interagir [ID]` - Interagir com um NPC.
 
 ---
 

@@ -8,7 +8,7 @@ const run = (sql, params = []) => new Promise((resolve, reject) => {
 });
 
 async function getNearbyAreas(phoneNumber) {
-    const playerQuery = `SELECT p.id, p.character_name, r.id as region_id, r.code, r.name, r.danger_level FROM players p JOIN regions r ON p.region_id = r.id WHERE p.phone_number = ?`;
+    const playerQuery = `SELECT p.id, p.character_name, p.region_id, r.code, r.name, r.danger_level FROM players p JOIN regions r ON p.region_id = r.id WHERE p.phone_number = ?`;
     const playerResult = await query(playerQuery, [phoneNumber]);
     if (playerResult.length === 0) throw new Error('Personagem não encontrado.');
     const player = playerResult[0];
