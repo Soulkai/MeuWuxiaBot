@@ -75,8 +75,10 @@ const regionId = initialRegion[0].id;
         await run(`INSERT INTO wallet_balances (player_id, gold) VALUES (?, 100)`, [playerId]);
 
         // Registro de LOG
+        // Registro de LOG (Agora com o 'status' exigido pelas leis do mundo)
         await run(
-            `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, command_text) VALUES ('playerService', 'player_register', 'create', ?, 'whatsapp', '/registrar')`,
+            `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, command_text, status) 
+             VALUES ('playerService', 'player_register', 'create', ?, 'whatsapp', '/registrar', 'success')`,
             [playerId]
         );
 
