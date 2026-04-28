@@ -29,13 +29,16 @@ async function exploreArea(phoneNumber) {
     if (playerResult.length === 0) throw new Error('Personagem não encontrado.');
     const player = playerResult[0];
 
-    // Gasto de Fadiga
+    // ATENÇÃO: O LOG FOI REMOVIDO DAQUI!
+    
+    // Gasta fadiga (Opcional, mas recomendado para o balanceamento)
     await run(`UPDATE player_attributes SET fatigue = fatigue + 5 WHERE player_id = ?`, [player.id]);
 
     const events = JSON.parse(player.event_table_json);
     let totalWeight = 0;
     for (let key in events) totalWeight += events[key];
     
+    // 1. AQUI NÓS CRIAMOS O selectedEvent
     let roll = Math.floor(Math.random() * totalWeight);
     let selectedEvent = 'nada';
 
@@ -77,7 +80,7 @@ async function exploreArea(phoneNumber) {
         socialEncounter = `\n\n👥 **Presença Detectada:** Ao vasculhar a região, você cruzou o caminho com o cultivador **${otherPlayer[0].character_name}**.\n*(Use /conversar ${otherPlayer[0].character_name} ou /trocar para interagir)*`;
     }
 
-    // --- O SELO DE LOG CORRIGIDO VEM EXATAMENTE AQUI NO FINAL ---
+    // 2. AGORA SIM O ÚNICO LOG ENTRA AQUI, POIS O selectedEvent JÁ EXISTE!
     await run(
         `INSERT INTO game_logs (service_name, event_type, action, player_id, source_context, status) 
          VALUES ('explorationService', 'explore', ?, ?, 'whatsapp', 'success')`, 
