@@ -46,7 +46,10 @@ async function registerPlayer(phoneNumber, pushName, characterName, sex) {
         }
 
         // Região Inicial Padrão: Vila Mortal (ID 1)
-        const regionId = 1;
+        // Região Inicial Padrão: Busca dinamicamente a área mais segura do mundo
+const initialRegion = await query(`SELECT id FROM regions ORDER BY danger_level ASC LIMIT 1`);
+if (initialRegion.length === 0) throw new Error('Os Céus e a Terra estão vazios! Execute o script de expansão do mundo para gerar as regiões.');
+const regionId = initialRegion[0].id;
 
         // 4. Inserção no Banco de Dados (Transação Simulada)
         await run(`BEGIN TRANSACTION`);
